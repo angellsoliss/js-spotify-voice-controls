@@ -87,9 +87,6 @@ app.get("/callback", async (req, res) => { //define route, define that the funct
         //store access token in session
         req.session.accessToken = accessToken;
         req.session.refreshToken = refreshToken;
-
-        console.log('Access token set:', accessToken);
-        console.log('Refresh token set:', refreshToken);
         
         //redirect user to profile route
         res.redirect("/profile");
