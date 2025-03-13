@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Voice Controls</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<div class="top_bar">
+    <h1>User: <%= username %></h1>
+</div>
+
+<div class="profile_wrapper">
+
+    <div class="artists_box">
+        <h2>You've been loving these artists lately...</h2>
+        <% if (artistArray && artistArray.length > 0) { %>
+                <% artistArray.forEach(artist => { %>
+                    <p><%= artist.name %></p>
+                <% }) %>
+        <% } else { %>
+            <p>No top artists found.</p>
+        <% } %>
+    </div>
+
+    <div class="control_box">
+        <h2>Controls</h2>
+        <div class="output">
+            <p>Waiting for input...</p>
+        </div>
+        <button id="toggleBtn">Start Listening</button>
+    </div>
+
+    <div class="commands_box">
+        <h2>Commands</h2>
+        <ul>
+            <li><span class="emphasize">Skip to next</span> - Skips to the next song</li>
+            <li><span class="emphasize">Go back</span> - Goes back to previous song</li>
+            <li><span class="emphasize">Pause</span> - Pauses playback</li>
+            <li><span class="emphasize">Play</span> - Resumes paused playback</li>
+            <li><span class="emphasize">Save</span> - Saves currently playing song to liked songs</li>
+            <li><span class="emphasize">Remove</span> - Removes the currently selected song from liked songs</li>
+            <li><span class="emphasize">Volume</span> (25/50/75/max) - Sets volume to one of the four values</li>
+            <li><span class="emphasize">Mute</span> - Sets volume to zero</li>
+            <li><span class="emphasize">Shuffle</span> - Enables song shuffling</li>
+            <li><span class="emphasize">Order</span> - Disables shuffling</li>
+        </ul>
+    </div>
+    <script src="/js/parser.js"></script> 
+</div>
+</body>
+</html>
