@@ -69,7 +69,6 @@ button:hover {
     position: relative;
     width: 28.125rem;
     backdrop-filter: blur(1000px);
-    border: 0.125rem solid #212121;
     border-radius: 0.938rem;
     padding: 4rem 3rem 4rem 3rem;
     box-shadow: 0rem 0rem 0.625rem 0.125rem rgba(0, 0, 0, 0.3);
