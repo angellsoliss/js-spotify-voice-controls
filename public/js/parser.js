@@ -116,71 +116,94 @@ function stopRecognition() {
 let lastCommandTime = 0;
 const commandCooldown = 500; //time in ms
 
+//array holding volume commands
+const volumeArray = [];
+for (let i = 0; i < 101; i++){
+    volumeArray.push('volume ' + i);
+}
+
+//map word interpretation to numbers
+const numberWords2Digits = {
+    'zero':0, 'one':1, 'two':2,
+    'three':3, 'four':4, 'five':5,
+    'six':6, 'seven':7, 'eight':8,
+    'nine':9
+};
+
+const numberWords = [
+    'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'
+];
+
 //list of commands
-const cmdList = ['skip to next', 'go back', 'pause', 'play', 'volume 25', 'volume 50', 'volume 75', 'volume max', 'mute', 'save', 'remove', 'shuffle', 'order']
+const cmdList = ['skip to next', 'go back', 'pause', 'play', 'mute', 'save', 
+    'remove', 'shuffle', 'order', ...volumeArray, 'volume zero', 'volume one', 
+    'volume two', 'volume three', 'volume four', 'volume five', 'volume six', 
+    'volume seven', 'volume eight', 'volume nine'];
+
 function processCommand(word) {
     const currentTime = Date.now();
     if (currentTime - lastCommandTime < commandCooldown) {
-        return; //ignore if commands are said too soon
-    }
+        return; // Ignore if commands are said too soon
+    };
     lastCommandTime = currentTime;
 
-    switch (word) {
-        case "skip to next":
-            console.log("skipping to next");
-            skipToNextTrack();
-            break;
-        case "go back":
-            console.log("skipping to previous track");
-            skipToPrevTrack();
-            break;
-        case "pause":
-            console.log("pausing");
-            pause();
-            break;
-        case "play":
-            console.log("resuming playback");
-            play();
-            break;
-        case "volume 25":
-            console.log("setting volume");
-            volume25();
-            break;
-        case "volume 50":
-            console.log("setting volume");
-            volume50();
-            break;
-        case "volume 75":
-            console.log("setting volume");
-            volume75();
-            break;
-        case "volume max":
-            console.log("setting volume");
-            volumeMax();
-            break;
-        case "mute":
-            console.log("setting volume");
-            mute();
-            break;
-        case "save":
-            console.log("saving track");
-            save();
-            break;
-        case "remove":
-            console.log("removing track");
-            remove();
-            break;
-        case "shuffle":
-            console.log("enabling shuffle");
-            shuffle();
-            break;
-        case "order":
-            console.log("disabling shuffle");
-            order();
-            break;
-        //error handling
-        default:
-            console.log("Command not recognized: " + word);
+    //check if user input contains number word
+    const foundNumberWord = numberWords.find(num => word.toLowerCase().includes(num));
+
+    if (foundNumberWord) {
+        word = 'volume ' + numberWords2Digits[foundNumberWord];
+    }
+
+    //match "volume" followed by a number
+    const volumeMatch = word.match(/^volume (\d+)$/);
+    if (volumeMatch) {
+        const volume = parseInt(volumeMatch[1]);
+        console.log(`Setting volume to ${volume}`);
+        setVolume(volume);
+        return;
+    }
+
+    if (cmdList.includes(word)) {
+        switch (word) {
+            case "skip to next":
+                console.log("skipping to next");
+                skipToNextTrack();
+                break;
+            case "go back":
+                console.log("skipping to previous track");
+                skipToPrevTrack();
+                break;
+            case "pause":
+                console.log("pausing");
+                pause();
+                break;
+            case "play":
+                console.log("resuming playback");
+                play();
+                break;
+            case "mute":
+                console.log("setting volume to 0");
+                mute();
+                break;
+            case "save":
+                console.log("saving track");
+                save();
+                break;
+            case "remove":
+                console.log("removing track");
+                remove();
+                break;
+            case "shuffle":
+                console.log("enabling shuffle");
+                shuffle();
+                break;
+            case "order":
+                console.log("disabling shuffle");
+                order();
+                break;
+        }
+    } else {
+        console.log("Command not recognized: " + word);
     }
 }
 
@@ -295,79 +318,23 @@ async function play() {
     }
 }
 
-async function volume25() {
+async function setVolume(value) {
     try {
-        const response = await fetch('/volume-25', {
+        const response = await fetch('/set-volume', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            body: JSON.stringify({ volume: value })
         });
 
         if (response.ok) {
-            console.log('Set volume to 25');
+            console.log(`Set volume to ${value}`);
         } else {
             console.error('Failed to set volume');
         }
     } catch (error) {
-        console.error('Error calling volume25:', error);
-    }
-}
-
-async function volume50() {
-    try {
-        const response = await fetch('/volume-50', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            console.log('Set volume to 50');
-        } else {
-            console.error('Failed to set volume');
-        }
-    } catch (error) {
-        console.error('Error calling volume50:', error);
-    }
-}
-
-async function volume75() {
-    try {
-        const response = await fetch('/volume-75', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            console.log('Set volume to 75');
-        } else {
-            console.error('Failed to set volume');
-        }
-    } catch (error) {
-        console.error('Error calling volume75:', error);
-    }
-}
-
-async function volumeMax() {
-    try {
-        const response = await fetch('/volume-max', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-
-        if (response.ok) {
-            console.log('Set volume to 100');
-        } else {
-            console.error('Failed to set volume');
-        }
-    } catch (error) {
-        console.error('Error calling volumeMax:', error);
+        console.error('Error calling setVolume:', error);
     }
 }
 

@@ -431,97 +431,31 @@ app.post('/remove', async (req, res) => {
     }
 });
 
-app.post('/volume-25', async (req, res) => {
-    try {
-        await spotifyApi.setVolume(25);
-        res.status(200).send('Set volume to 25');
-    } catch (error) {
-        if (error.statusCode === 401) {
-            try{
-                console.log('Token expired, attempting to refresh');
-                await refreshToken();
+app.post('/set-volume', async (req, res) => {
+    const { volume } = req.body;
 
-                //retry
-                await spotifyApi.setVolume(25);
-                res.status(200).send('Token refreshed! Set volume to 25');
-            } catch (refreshError) {
-                console.error('Failed to refresh token: ', refreshError);
-                res.status(500).send('Failed to refresh token and set volume');
-            }
-        } else {
-            console.error('Error setting volume', error);
-            res.status(500).send('Failed to set volume');
-        }
+    if (typeof volume !== 'number' || volume < 0 || volume > 100) {
+        return res.status(400).send('Invalid volume value. Must be between 0 and 100.');
     }
-});
 
-app.post('/volume-50', async (req, res) => {
     try {
-        await spotifyApi.setVolume(50);
-        res.status(200).send('Set volume to 50');
+        await spotifyApi.setVolume(volume);
+        res.status(200).send(`Set volume to ${volume}`);
     } catch (error) {
         if (error.statusCode === 401) {
-            try{
+            try {
                 console.log('Token expired, attempting to refresh');
                 await refreshToken();
 
-                //retry
-                await spotifyApi.setVolume(50);
-                res.status(200).send('Token refreshed! Set volume to 50');
+                // Retry setting the volume after refreshing token
+                await spotifyApi.setVolume(volume);
+                res.status(200).send(`Token refreshed! Set volume to ${volume}`);
             } catch (refreshError) {
                 console.error('Failed to refresh token: ', refreshError);
                 res.status(500).send('Failed to refresh token and set volume');
             }
         } else {
-            console.error('Error setting volume', error);
-            res.status(500).send('Failed to set volume');
-        }
-    }
-});
-
-app.post('/volume-75', async (req, res) => {
-    try {
-        await spotifyApi.setVolume(75);
-        res.status(200).send('Set volume to 75');
-    } catch (error) {
-        if (error.statusCode === 401) {
-            try{
-                console.log('Token expired, attempting to refresh');
-                await refreshToken();
-
-                //retry
-                await spotifyApi.setVolume(75);
-                res.status(200).send('Token refreshed! Set volume to 75');
-            } catch (refreshError) {
-                console.error('Failed to refresh token: ', refreshError);
-                res.status(500).send('Failed to refresh token and set volume');
-            }
-        } else {
-            console.error('Error setting volume', error);
-            res.status(500).send('Failed to set volume');
-        }
-    }
-});
-
-app.post('/volume-max', async (req, res) => {
-    try {
-        await spotifyApi.setVolume(100);
-        res.status(200).send('Set volume to 100');
-    } catch (error) {
-        if (error.statusCode === 401) {
-            try{
-                console.log('Token expired, attempting to refresh');
-                await refreshToken();
-
-                //retry
-                await spotifyApi.setVolume(100);
-                res.status(200).send('Token refreshed! Set volume to 100');
-            } catch (refreshError) {
-                console.error('Failed to refresh token: ', refreshError);
-                res.status(500).send('Failed to refresh token and set volume');
-            }
-        } else {
-            console.error('Error setting volume', error);
+            console.error('Error setting volume:', error);
             res.status(500).send('Failed to set volume');
         }
     }
